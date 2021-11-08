@@ -1,0 +1,11 @@
+.login-interface {
+  text-align: center;
+  width: 450px;
+  margin: 10em auto;
+}
+#create-account-btn {
+  margin-bottom: 1em;
+}
+.create-account-input {
+  margin: 1em 0;
+}
