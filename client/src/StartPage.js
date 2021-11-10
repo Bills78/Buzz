@@ -2,7 +2,6 @@ import NewUser from './comps/NewUser';
 import Login from './comps/Login';
 import Container from 'react-bootstrap/Container';
 import Card from 'react-bootstrap/Card';
-import Button from 'react-bootstrap/Button';
 import axios from 'axios';
 import { useState } from 'react';
 
@@ -35,7 +34,12 @@ const Start = () => {
       .then(res => console.log(res.data))
       .catch(err => console.log(err.message));
   };
-    
+
+  const onLoginSubmit = async () => {
+    await axios.post('/log-in', {...loginUser})
+      .then(res => console.log(res.data))
+      .catch(err => console.log(err));
+  };
 
   return (
     <Container>
@@ -51,15 +55,12 @@ const Start = () => {
           <div>
             <p>or</p>
           </div>
-          <Button variant="primary" onClick={() => setModalShow(true)}>
-            Login
-          </Button>
-          <Login
-            onChange={handleLoginChange}
-            show={modalShow}
-            onHide={() => setModalShow(false)}
-            onSubmit={onNewSubmit}
-          />
+            <Login
+              show={modalShow}
+              onHide={() => setModalShow(false)}
+              handleLoginChange={handleLoginChange}
+              onLoginSubmit={onLoginSubmit}
+            />
         </Card.Body>
       </Card>
     </Container>

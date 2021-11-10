@@ -3,9 +3,13 @@
   width: 450px;
   margin: 10em auto;
 }
-#create-account-btn {
+.account-btn {
   margin-bottom: 1em;
 }
-.create-account-input {
-  margin: 1em 0;
+.form-control {
+  margin-bottom: 1em;
+}
+
+.input-group-text {
+  margin-bottom: 1em;
 }

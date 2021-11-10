@@ -1,6 +1,5 @@
 import Form from 'react-bootstrap/Form';
 import Container from 'react-bootstrap/Container'
-// import FormControl from 'react-bootstrap/FormControl';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/esm/Button';
 
@@ -12,7 +11,7 @@ const NewUser = (props) => {
     <Container className='w-75'>
     <h2>Create New Account</h2>
       <Form onSubmit={onNewSubmit}>
-        <InputGroup className='create-account-input'>
+        <InputGroup className='account-input'>
           <InputGroup.Text>@</InputGroup.Text>
           <Form.Control 
             required 
@@ -22,7 +21,7 @@ const NewUser = (props) => {
             onChange={handleNewChange}
             />
         </InputGroup>
-        <Form.Group className='create-account-input' controlId='newUserEmail'>
+        <Form.Group className='account-input' controlId='newUserEmail'>
           <Form.Control 
             required 
             type='email'  
@@ -31,7 +30,7 @@ const NewUser = (props) => {
             onChange={handleNewChange}
             />
         </Form.Group>
-        <Form.Group className='create-account-input' controlId='newUserPass'>
+        <Form.Group className='account-input' controlId='newUserPass'>
           <Form.Control 
             required 
             type='password'   
@@ -40,7 +39,7 @@ const NewUser = (props) => {
             onChange={handleNewChange}
             />
         </Form.Group>
-        <Button id='create-account-btn' type='submit'>Create Account</Button>
+        <Button className='account-btn' type='submit'>Create Account</Button>
       </Form>
     </Container>
   );
