@@ -3,7 +3,7 @@ import Login from './comps/Login';
 import Container from 'react-bootstrap/Container';
 import Card from 'react-bootstrap/Card';
 import axios from 'axios';
-import { useState } from 'react';
+import { useState, useHistory } from 'react';
 
 axios.defaults.baseURL = 'http://localhost:8080';
 
@@ -18,6 +18,7 @@ const Start = () => {
     username: '',
     password: ''
   });
+  // const history = useHistory();
 
   const handleNewChange = (e) => setNewUser({
     ...newUser,
@@ -29,16 +30,21 @@ const Start = () => {
     [e.target.name]: e.target.value
   });
 
-  const onNewSubmit = async () => {
+  const onNewSubmit = async (e) => {
+    e.preventDefault();
     await axios.post('/new-user', {...newUser})
       .then(res => console.log(res.data))
       .catch(err => console.log(err.message));
   };
 
-  const onLoginSubmit = async () => {
+  const onLoginSubmit = async (e, path) => {
+    e.preventDefault();
     await axios.post('/log-in', {...loginUser})
-      .then(res => console.log(res.data))
-      .catch(err => console.log(err));
+      .then(res => {
+        console.log(res.data);
+        useHistory.push(path);
+      })
+      .catch(err => console.log(err.message));
   };
 
   return (

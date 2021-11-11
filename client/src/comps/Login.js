@@ -10,7 +10,7 @@ function Login(props) {
   return (
     <Container className='w-75'>
     <h2>Login</h2>
-      <Form onSubmit={onLoginSubmit}>
+      <Form onSubmit={() => onLoginSubmit('/home')}>
         <InputGroup className='account-input'>
           <InputGroup.Text>@</InputGroup.Text>
           <Form.Control 
@@ -30,6 +30,7 @@ function Login(props) {
             onChange={handleLoginChange}
             />
         </Form.Group>
+
         <Button className='account-btn' type='submit'>Login</Button>
       </Form>
     </Container>
