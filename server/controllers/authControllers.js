@@ -16,18 +16,20 @@ module.exports.newuser_post = (req, res) => {
       password: `${hash}`
     });
 
-    const token = createToken(user._id, email);
-    user.token = token;
+    const token = jwt.sign(
+      { user_id: user.id, username }, 
+      process.env.TOKEN_KEY,{
+      expiresIn: maxAge
+      });
 
     user.save()
       .then(() => {
-        res.status(201).json(user);
+        res.status(200).json({ token });
       })
       .catch(err => {
         console.log(err);
         res.status(500).json({ message: 'Database error...' })
       });
-    console.log(user.token);
     });
 
   } catch (err) {
@@ -45,13 +47,9 @@ module.exports.login_post = async (req, res) => {
         { user_id: user.id, username },
         process.env.TOKEN_KEY,{
           expiresIn: maxAge
-        }
-      )
-      user.token = token;
+        });
 
-      console.log(user.token);
-
-      res.status(200).json({ message: 'Auth sucessful!', user });
+      res.status(200).json({ token });
       } else if (!user) {
         res.status(401).json({ message: 'Incorrect username...'});
       } else {

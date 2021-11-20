@@ -37,9 +37,11 @@ const NewUser = (props) => {
             placeholder='Password'  
             name='password'
             onChange={handleNewChange}
+            minLength={8}
+            maxLength={16}
             />
         </Form.Group>
-        <Button className='account-btn' type='submit'>Create Account</Button>
+        <Button variant='dark' className='account-btn' type='submit'>Create Account</Button>
       </Form>
     </Container>
   );

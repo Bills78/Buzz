@@ -1,13 +1,17 @@
-import NewUser from './comps/NewUser';
-import Login from './comps/Login';
+import NewUser from '../auth/NewUser';
+import Login from '../auth/Login';
 import Container from 'react-bootstrap/Container';
 import Card from 'react-bootstrap/Card';
 import axios from 'axios';
-import { useState, useHistory } from 'react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 axios.defaults.baseURL = 'http://localhost:8080';
 
 const Start = () => {
+
+  let navigate = useNavigate();
+
   const [modalShow, setModalShow] = useState(false);
   const [newUser, setNewUser] = useState({
     username: '',
@@ -18,7 +22,6 @@ const Start = () => {
     username: '',
     password: ''
   });
-  // const history = useHistory();
 
   const handleNewChange = (e) => setNewUser({
     ...newUser,
@@ -33,24 +36,29 @@ const Start = () => {
   const onNewSubmit = async (e) => {
     e.preventDefault();
     await axios.post('/new-user', {...newUser})
-      .then(res => console.log(res.data))
-      .catch(err => console.log(err.message));
+      .then(res => {
+          localStorage.setItem('user', res.data.token);
+          navigate('/home');
+      })
+      .catch(err => console.log(err.response.data.message));
   };
 
-  const onLoginSubmit = async (e, path) => {
+  const onLoginSubmit = async (e) => {
     e.preventDefault();
     await axios.post('/log-in', {...loginUser})
       .then(res => {
-        console.log(res.data);
-        useHistory.push(path);
+          localStorage.setItem('user', res.data.token);
+          navigate('/home');
       })
-      .catch(err => console.log(err.message));
-  };
+      .catch(err => {
+        console.log(err.response.data.message);
+      })
+    };
 
   return (
     <Container>
-      <Card className='login-interface'>
-        <Card.Header>Welcome to BookFace</Card.Header>
+      <Card bg='warning' className='login-interface'>
+        <Card.Header>Welcome to Buzz</Card.Header>
         <Card.Body>
           <Container>
             <NewUser 

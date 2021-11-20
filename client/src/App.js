@@ -1,5 +1,6 @@
-import Start from './StartPage';
-import Home from './comps/Home';
+import Start from './pages/StartPage';
+import Home from './pages/Home';
+import Profile from './pages/Profile';
 import {
   BrowserRouter as Router,
   Routes,
@@ -7,6 +8,7 @@ import {
 } from 'react-router-dom';
 
 function App() {
+
   return(
     <Router>
       <div className='App'>
@@ -14,6 +16,7 @@ function App() {
           <Routes>
             <Route exact path='/' element={<Start />} />
             <Route path='/home' element={<Home />} />
+            <Route path='/profile' element={<Profile />} />
           </Routes>
         </div>
       </div>

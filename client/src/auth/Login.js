@@ -10,7 +10,7 @@ function Login(props) {
   return (
     <Container className='w-75'>
     <h2>Login</h2>
-      <Form onSubmit={() => onLoginSubmit('/home')}>
+      <Form onSubmit={onLoginSubmit}>
         <InputGroup className='account-input'>
           <InputGroup.Text>@</InputGroup.Text>
           <Form.Control 
@@ -31,7 +31,7 @@ function Login(props) {
             />
         </Form.Group>
 
-        <Button className='account-btn' type='submit'>Login</Button>
+        <Button variant='dark' className='account-btn' type='submit'>Login</Button>
       </Form>
     </Container>
   );
