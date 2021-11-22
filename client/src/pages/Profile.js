@@ -1,136 +1,146 @@
-import TopNavbar from '../comps/Navbar';
-import Button from 'react-bootstrap/Button'
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
+import TopNavbar from "../comps/Navbar";
+import { 
+  Button,
+  Container,
+  Row,
+  Col
+} from "react-bootstrap";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import Post from '../comps/Post';
-import Popup from '../comps/Modal';
-import InspectModal from '../comps/Inspect';
+import Post from "../comps/Post";
+import Popup from "../comps/Modal";
+import InspectModal from "../comps/Inspect";
 
 const Profile = () => {
-
-  axios.defaults.baseURL = 'http://localhost:8080';
-  const token = localStorage.getItem('user');
+  axios.defaults.baseURL = "http://localhost:8080";
+  const token = localStorage.getItem("user");
   const [posts, setPosts] = useState(null);
   const [modalShow, setModalShow] = useState(false);
+  // const [username, setUsername] = useState(null);
   const [inspectShow, setInspectShow] = useState(false);
   const [single, setSingle] = useState(null);
   const [post, setPost] = useState({
-    body: ''
+    body: "",
   });
 
   useEffect(() => {
-    axios.get('/profile-posts', {
-      headers: {
-        'x-access-token': `${token}`
-      }
-    })
-      .then(res => {
+    axios
+      .get("/profile-posts", {
+        headers: {
+          "x-access-token": `${token}`,
+        },
+      })
+      .then((res) => {
         setPosts(res.data);
       })
-      .catch(err => console.log(err.message));
-      // eslint-disable-next-line
-  }, [modalShow, inspectShow]);
+      .catch((err) => console.log(err.message));
+    // eslint-disable-next-line
+  }, [inspectShow]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setPost(prevState => ({
+    setPost((prevState) => ({
       ...prevState,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleSubmit = async () => {
     const newPost = post;
-    await axios.post('/create-post', {
-        ...newPost
-      }, {
-        headers: {
-          'x-access-token': `${token}`
+    await axios
+      .post(
+        "/create-post",
+        {
+          ...newPost,
+        },
+        {
+          headers: {
+            "x-access-token": `${token}`,
+          },
         }
-      })
-      .then(res => {
-        setPost({body: ''});
+      )
+      .then(() => {
+        setPost({ body: "" });
       })
       .then(setModalShow(false));
   };
 
   const inspectPost = async (postId) => {
-    await axios.get('/profile-posts', {
-      headers: {
-        'x-access-token': `${token}`
-      },
-    })
-    .then(res => {
-      setPosts(res.data);
-      setSingle(posts.filter(post => post._id === postId));
-    })
-    .then(res => {
-      setInspectShow(true);
-    })
-    .catch(err => console.log(err));
+    await axios
+      .get("/profile-posts", {
+        headers: {
+          "x-access-token": `${token}`,
+        },
+      })
+      .then((res) => {
+        setPosts(res.data);
+        setSingle(posts.filter((post) => post._id === postId));
+      })
+      .then(() => {
+        setInspectShow(true);
+      })
+      .catch((err) => console.log(err));
   };
 
   async function handleDelete(postId) {
-    await axios.delete(`/delete-post/:${postId}`, {
-      params: {
-        post_id: postId
-      },
-      headers: {
-        'x-access-token': `${token}`
-      },
-    })
-    .then(res => {
-      const posts = res.data;
-      console.log(posts);
-      setPosts(posts);
-    })
-    .catch(err => console.log(err));
-  };
+    await axios
+      .delete(`/delete-post/:${postId}`, {
+        params: {
+          post_id: postId,
+        },
+        headers: {
+          "x-access-token": `${token}`,
+        },
+      })
+      .then((res) => {
+        console.log(res.data)
+        const posts = res.data;
+        // console.log(posts);
+        setPosts(posts);
+      })
+      .catch((err) => console.log(err));
+  }
 
   return (
     <div>
       <TopNavbar />
-      <Container className='home-page'>
+      <Container className="home-page">
         <Row>
-          <Col xs={10}>{ 
-            posts && 
-            <Post 
-              posts={posts}
-              inspectPost={inspectPost}
-            />}
+          <Col xs={10}>
+            {posts && <Post posts={posts} inspectPost={inspectPost} />}
           </Col>
-          <Col className='xtra'>
-            <Button 
-              size='lg' 
-              variant='outline-dark' 
-              id='addPost'
+          <Col className="xtra">
+            <Button
+              size="lg"
+              variant="outline-dark"
+              id="addPost"
               onClick={() => {
                 setModalShow(true);
-              }}>
-              + 
-              </Button>
+              }}
+            >
+              +
+            </Button>
 
-              <Popup 
-                show={modalShow}
-                onHide={() => setModalShow(false)}
-                onChange={handleChange}
-                onSubmit={handleSubmit}
-                post={post}
-              />
+            <Popup
+              show={modalShow}
+              onHide={() => setModalShow(false)}
+              onChange={handleChange}
+              onSubmit={handleSubmit}
+              post={post}
+            />
 
-              { single && <InspectModal 
+            {single && (
+              <InspectModal
                 show={inspectShow}
                 onHide={() => setInspectShow(false)}
                 single={single}
                 handleDelete={handleDelete}
-              />}
+              />
+            )}
           </Col>
         </Row>
       </Container>
     </div>
-  )
-}
+  );
+};
 export default Profile;

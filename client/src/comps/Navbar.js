@@ -1,11 +1,14 @@
 import { 
   Navbar,
   Container,
-  Nav
+  Nav,
+  Button
 } from "react-bootstrap"
+import { useNavigate } from 'react-router-dom';
 
-const topNavbar = (props) => {
+const TopNavbar = (props) => {
 
+  const navigate = useNavigate();
   const { username } = props;
 
   return (
@@ -17,9 +20,17 @@ const topNavbar = (props) => {
               <Nav.Link href='/home'>The Hive</Nav.Link>
             </Nav.Item> 
             <Nav.Item>
-              <Nav.Link href='/Profile'>
+              <Nav.Link href='/profile'>
                   {username}
               </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Button 
+                variant='dark' 
+                onClick={() => {
+                  localStorage.removeItem('user');
+                  navigate('/')
+                  }}>Logout</Button>
             </Nav.Item>
           </Nav>
       </Container>
@@ -27,4 +38,4 @@ const topNavbar = (props) => {
   )
 };
 
-export default topNavbar
+export default TopNavbar

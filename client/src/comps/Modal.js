@@ -3,7 +3,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 
 const Popup = (props) => {
-  const { handleSubmit, handleChange, post, onHide } = props;
+  const { handleSubmit, handleChange, post } = props;
 
   return (
     <Modal
@@ -31,7 +31,7 @@ const Popup = (props) => {
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant='warning' onClick={onHide}>Close</Button>
+          {/* <Button variant='warning' onClick={onHide}>Close</Button> */}
           <Button variant='warning' type='submit'>Submit</Button>
         </Modal.Footer>
       </Form>

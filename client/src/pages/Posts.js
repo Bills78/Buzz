@@ -9,10 +9,10 @@ import Post from '../comps/Post';
 import Popup from '../comps/Modal';
 import InspectModal from '../comps/Inspect';
 
-const Home = () => {
 
-  const token = localStorage.getItem('user');
+const Posts = (props) => {
   axios.defaults.baseURL = 'http://localhost:8080';
+  const token = localStorage.getItem('user');
   const [posts, setPosts] = useState(null);
   const [modalShow, setModalShow] = useState(false);
   const [username, setUsername] = useState(null);
@@ -21,9 +21,10 @@ const Home = () => {
   const [post, setPost] = useState({
     body: ''
   });
+  const { BEAPI } = props
 
   useEffect(() => {
-    axios.get('/all-posts', {
+    axios.get(`${BEAPI}`, {
       headers: { 
         'x-access-token': token
       }
@@ -34,7 +35,7 @@ const Home = () => {
     })
     .catch(err => console.log(err.message));
     // eslint-disable-next-line
-  }, []);
+  }, [modalShow]);
     
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -54,10 +55,13 @@ const Home = () => {
           'x-access-token': `${token}`
         }
       })
-      .then(setPost({
-        body: ''
-      }))
-      .then(setModalShow(false));
+      .then(res => {
+        setPosts(res.json);
+        setModalShow(false);
+        setPost({
+          body: ''
+        });
+      });
   };
 
   const inspectPost = async (postId) => {
@@ -75,6 +79,25 @@ const Home = () => {
     })
     .catch(err => console.log(err));
   };
+
+  async function handleDelete(postId) {
+    await axios
+      .delete(`/delete-post/:${postId}`, {
+        params: {
+          post_id: postId,
+        },
+        headers: {
+          "x-access-token": `${token}`,
+        },
+      })
+      .then((res) => {
+        console.log(res.data)
+        const posts = res.data;
+        // console.log(posts);
+        setPosts(posts);
+      })
+      .catch((err) => console.log(err));
+  }
 
   return (
     <div>
@@ -112,6 +135,7 @@ const Home = () => {
                 onHide={() => setInspectShow(false)}
                 single={single}
                 username={username}
+                handleDelete={handleDelete}
               />}
           </Col>
         </Row>
@@ -120,4 +144,4 @@ const Home = () => {
   )
 }
 
-export default Home;
+export default Posts;

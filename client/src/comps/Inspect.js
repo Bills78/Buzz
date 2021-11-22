@@ -4,14 +4,25 @@ import uniqid from 'uniqid';
 
 const InspectModal = (props) => {
 
-  const { username, onHide, single, handleDelete, ...rest } = props;
+  const { 
+      username, 
+      onHide, 
+      single, 
+      handleDelete, 
+      editContent, 
+      ...rest 
+    } = props;
 
   const LeButton = (props) => {
     return (
-      <Button variant='dark' onClick={() => {
-        handleDelete(props.postId);
-        onHide();
-      }}>Delete</Button>
+      <Modal.Footer>
+        <Button variant='warning' onClick={editContent}>Update</Button>
+        <Button variant='dark' onClick={() => {
+          console.log(props.postId)
+          handleDelete(props.postId);
+          onHide();
+        }}>Delete</Button>
+      </Modal.Footer>
     )
   };
 
@@ -21,8 +32,8 @@ const InspectModal = (props) => {
 
   const IsUser = (props) => {
     if (props.username === props.postUser) {
-      return <LeButton />
-    }
+      return <LeButton postId={props.postId}/>
+      }
     return <NotLeButton />
   }
 
@@ -35,21 +46,19 @@ const InspectModal = (props) => {
               size="lg"
               aria-labelledby="contained-modal-title-vcenter"
               centered
+              onHide={onHide}
             >
+            <Modal.Header closeButton>
+              @{post.postedBy}
+            </Modal.Header>
               <Modal.Body>
-                <p>{`${post.body}`}</p>
+                <p>{post.body}</p>
               </Modal.Body>
-              <Modal.Footer>
-                <Button variant='warning' onClick={onHide}>Close</Button>
                 <IsUser 
                   username={username}
-                  postUser={post.username}
+                  postUser={post.postedBy}
+                  postId={post._id}
                 />
-                {/* <Button variant='dark' onClick={() => {
-                  handleDelete(post._id);
-                  onHide();
-                }}>Delete</Button> */}
-              </Modal.Footer>
             </Modal>
           </div>
         })

@@ -1,6 +1,5 @@
 import Start from './pages/StartPage';
-import Home from './pages/Home';
-import Profile from './pages/Profile';
+import Posts from './pages/Posts';
 import {
   BrowserRouter as Router,
   Routes,
@@ -15,8 +14,14 @@ function App() {
         <div className='content'>
           <Routes>
             <Route exact path='/' element={<Start />} />
-            <Route path='/home' element={<Home />} />
-            <Route path='/profile' element={<Profile />} />
+            <Route 
+              path='/home' 
+              element={<Posts BEAPI={'/all-posts'} />} 
+            />
+            <Route 
+              path='/profile' 
+              element={<Posts BEAPI={'/profile-posts'} />} 
+            />
           </Routes>
         </div>
       </div>
