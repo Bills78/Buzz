@@ -7,7 +7,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import Post from "../comps/Post";
 import Popup from "../comps/Modal";
-import InspectModal from "../comps/Inspect";
+import Edit from "../comps/Edit";
 
 const Posts = (props) => {
   axios.defaults.baseURL = "http://localhost:8080";
@@ -15,12 +15,14 @@ const Posts = (props) => {
   const [posts, setPosts] = useState(null);
   const [modalShow, setModalShow] = useState(false);
   const [username, setUsername] = useState(null);
-  const [inspectShow, setInspectShow] = useState(false);
-  const [single, setSingle] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
   const [post, setPost] = useState({
     body: "",
   });
+  const [id, setId] = useState({
+    id: "",
+  });
+
   const { BEAPI } = props;
 
   useEffect(() => {
@@ -36,7 +38,7 @@ const Posts = (props) => {
       })
       .catch((err) => console.log(err.message));
     // eslint-disable-next-line
-  }, [modalShow, inspectShow]);
+  }, [modalShow]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -51,7 +53,7 @@ const Posts = (props) => {
     const newPost = post;
     await axios
       .post(
-        "create-post",
+        "/create-post",
         {
           ...newPost,
         },
@@ -62,29 +64,11 @@ const Posts = (props) => {
         }
       )
       .then((res) => {
-        setPosts(res.json);
         setModalShow(false);
         setPost({
           body: "",
         });
       });
-  };
-
-  const inspectPost = async (postId) => {
-    await axios
-      .get("/all-posts", {
-        headers: {
-          "x-access-token": `${token}`,
-        },
-      })
-      .then((res) => {
-        setPosts(res.data.posts);
-        setSingle(posts.filter((post) => post._id === postId));
-      })
-      .then((res) => {
-        setInspectShow(true);
-      })
-      .catch((err) => console.log(err));
   };
 
   async function handleDelete(postId) {
@@ -98,20 +82,37 @@ const Posts = (props) => {
         },
       })
       .then((res) => {
-        console.log(res.data);
-        const posts = res.data;
-        setPosts(posts);
+        const deletedId = res.data._id;
+        setPosts(posts.filter((post) => post._id !== deletedId));
       })
       .catch((err) => console.log(err));
   }
 
-  function handleEdit(postBody) {
-    setPost({
-      body: `${postBody}`
-    });
-    setIsEditing(true);
-    console.log(isEditing)
-  }
+  const submitEdit = async () => {
+    await axios
+      .patch(
+        `/edit-post/:${id}`,
+        {
+          body: post.body,
+        },
+        {
+          params: {
+            post_id: id,
+          },
+          headers: {
+            "x-access-token": `${token}`,
+          },
+        }
+      )
+      .then(() => {
+        setPost({
+          body: "",
+        });
+        setId({
+          id: "",
+        });
+      });
+  };
 
   return (
     <div>
@@ -119,9 +120,19 @@ const Posts = (props) => {
       <Container className="home-page">
         <Row>
           <Col xs={10}>
-            {posts && <Post posts={posts} inspectPost={inspectPost} />}
+            {posts && (
+              <Post
+                posts={posts}
+                username={username}
+                handleDelete={handleDelete}
+                showEdit={showEdit}
+                setShowEdit={setShowEdit}
+                setPost={setPost}
+                setId={setId}
+              />
+            )}
           </Col>
-          <Col xs={2} className="xtra">
+          <Col className="xtra">
             <Button
               size="lg"
               variant="outline-dark"
@@ -141,19 +152,13 @@ const Posts = (props) => {
               post={post}
             />
 
-            {single && (
-              <InspectModal
-                show={inspectShow}
-                onHide={() => setInspectShow(false)}
-                single={single}
-                username={username}
-                handleDelete={handleDelete}
-                editContent={handleEdit}
-                isEditing={isEditing}
-                handleChange={handleChange}
-                handleSubmit={handleSubmit}
-              />
-            )}
+            <Edit
+              show={showEdit}
+              onHide={() => setShowEdit(false)}
+              onChange={handleChange}
+              post={post}
+              submitEdit={submitEdit}
+            />
           </Col>
         </Row>
       </Container>

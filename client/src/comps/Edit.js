@@ -2,8 +2,8 @@ import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 
-const Popup = (props) => {
-  const { handleSubmit, handleChange } = props;
+const Edit = (props) => {
+  const { submitEdit, handleChange, post } = props;
 
   return (
     <Modal
@@ -12,19 +12,19 @@ const Popup = (props) => {
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >
-      <Form onSubmit={handleSubmit}>
+      <Form onSubmit={submitEdit}>
         <Modal.Header closeButton>
-          <Modal.Title id="contained-modal-title-vcenter">
-            Create A Post
-          </Modal.Title>
+          <Modal.Title id="contained-modal-title-vcenter">Edit</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form.Group>
             <Form.Label htmlFor="body">Message:</Form.Label>
             <Form.Control
               onChange={handleChange}
+              defaultValue={post}
               type="text"
               name="body"
+              as="textarea"
               required
             />
           </Form.Group>
@@ -39,4 +39,4 @@ const Popup = (props) => {
   );
 };
 
-export default Popup;
+export default Edit;
