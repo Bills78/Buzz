@@ -16,12 +16,8 @@ const Posts = (props) => {
   const [modalShow, setModalShow] = useState(false);
   const [username, setUsername] = useState(null);
   const [showEdit, setShowEdit] = useState(false);
-  const [post, setPost] = useState({
-    body: "",
-  });
-  const [id, setId] = useState({
-    id: "",
-  });
+  const [post, setPost] = useState({ body: "" });
+  const [id, setId] = useState({ id: "" });
 
   const { BEAPI } = props;
 
@@ -38,7 +34,7 @@ const Posts = (props) => {
       })
       .catch((err) => console.log(err.message));
     // eslint-disable-next-line
-  }, [modalShow]);
+  }, [modalShow, id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -48,8 +44,7 @@ const Posts = (props) => {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     const newPost = post;
     await axios
       .post(
@@ -91,10 +86,7 @@ const Posts = (props) => {
   const submitEdit = async () => {
     await axios
       .patch(
-        `/edit-post/:${id}`,
-        {
-          body: post.body,
-        },
+        `/edit-post/:${id}`, { body: post.body },
         {
           params: {
             post_id: id,
@@ -114,6 +106,80 @@ const Posts = (props) => {
       });
   };
 
+  const addLike = async (postId, postLikes) => {
+    const newLikes = postLikes + 1;
+    await axios.all([
+      axios.patch('/add-like', { likes: newLikes }, 
+        {
+          params: {
+            post_id: postId,
+          },
+          headers: {
+            "x-access-token": `${token}`,
+          },
+        })
+        .then(() => {
+          setId({ id: "" })
+        }),
+      axios.patch('add-liked', { postId },
+        {
+          headers: {
+            "x-access-token": `${token}`
+          }
+        }),
+      ]);
+  };
+
+  const removeLike = async (postId, postLikes) => {
+    setId({ id: "" })
+    const newLikes = postLikes - 1;
+    await axios.all([
+      axios.patch('/add-like', { likes: newLikes }, 
+        {
+          params: {
+            post_id: postId,
+          },
+          headers: {
+            "x-access-token": `${token}`,
+          },
+        })
+        .then(() => {
+          setId({ id: "" })
+        }),
+      axios.patch('remove-liked', { postId },
+        {
+          headers: {
+            "x-access-token": `${token}`
+          }
+        }),
+      ]);
+  }
+
+
+  const sendLikes = async (postId, postLikes) => {
+    setId({ id: 1 })
+    await axios
+      .get(`/check-likes/:${postId}`, {
+        params: {
+          post_id: postId,
+        },
+        headers: {
+          "x-access-token": `${token}`,
+        },
+      })
+      .then(res => {
+        const data = res.data.data;
+        if (data === true) {
+          console.log('remove')
+          return removeLike(postId, postLikes)
+        } else if (data === false) {
+          console.log('add')
+          return addLike(postId, postLikes)
+          
+      }
+    })
+  }
+
   return (
     <div>
       {username && <TopNavbar username={username} />}
@@ -129,6 +195,7 @@ const Posts = (props) => {
                 setShowEdit={setShowEdit}
                 setPost={setPost}
                 setId={setId}
+                sendLikes={sendLikes}
               />
             )}
           </Col>

@@ -1,23 +1,24 @@
 import { Card, Container, Button } from "react-bootstrap";
 
 const Post = (props) => {
-  const { posts, username, handleDelete, setShowEdit, setPost, setId } = props;
+  const { posts, username, handleDelete, setShowEdit, setPost, setId, sendLikes } = props;
 
   const Buttons = (props) => {
     if (username === props.postUser) {
       return (
-        <Card.Footer>
+        <>
           <Button
+            size="sm"
             variant="warning"
             onClick={() => {
               setShowEdit(true);
               setPost(props.postBody);
               setId(props.postId);
-            }}
-          >
+            }}>
             Edit
-          </Button>
+          </Button>{" "}
           <Button
+            size="sm"
             variant="dark"
             onClick={() => {
               handleDelete(props.postId);
@@ -25,7 +26,7 @@ const Post = (props) => {
           >
             Delete
           </Button>
-        </Card.Footer>
+        </>
       );
     }
     return null;
@@ -46,11 +47,20 @@ const Post = (props) => {
               <Card.Body>
                 <Card.Text>{post.body}</Card.Text>
               </Card.Body>
+              <Card.Footer>
+              <Button
+                onClick={() => {
+                  sendLikes(post._id, post.likes)
+                }}
+                size="sm"
+                variant='warning'
+              >Likes: {post.likes}</Button>{' '}
               <Buttons
                 postUser={post.postedBy}
                 postId={post._id}
                 postBody={post.body}
               />
+              </Card.Footer>
             </Card>
           </div>
         );

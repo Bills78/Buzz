@@ -13,7 +13,8 @@ module.exports.newuser_post = (req, res) => {
     const user = await new User({
       username: `${username}`,
       email: `${email}`,
-      password: `${hash}`
+      password: `${hash}`,
+      liked: [],
     });
 
     const token = jwt.sign(
@@ -59,3 +60,40 @@ module.exports.login_post = async (req, res) => {
     console.log(err);
   }
 };
+
+module.exports.likedPost_get = async (req, res) => {
+  postId = req.query.post_id;
+  username = req.user.username;
+  User.find({ username }, (err, result) => {
+    if (err) {
+      console.log(err)
+    } else {
+      const isLiked = result[0].liked.includes(postId);
+      res.json({ data: isLiked })
+    }
+  })
+}
+
+module.exports.addLiked_patch = async (req, res) => {
+  postId = req.body.postId;
+  username= req.user.username;
+  User.updateOne({ username }, { $addToSet: { liked: [`${postId}`]}},
+    (err, result) => {
+      if(err) {
+        res.json(err.message)
+      }
+      console.log(result)
+    })
+}
+
+module.exports.removeLiked_patch = async (req, res) => {
+  postId = req.body.postId;
+  username= req.user.username;
+  User.updateOne({ username }, { $pullAll: { liked: [`${postId}`]}},
+    (err, result) => {
+      if(err) {
+        res.json(err.message)
+      }
+      res.json(result)
+    })
+}

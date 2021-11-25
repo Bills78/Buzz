@@ -9,7 +9,10 @@ const postSchema = new Schema({
   postedBy: {
     type: String,
     ref: 'User'
-  }
+  },
+  likes: {
+    type: Number,
+  },
 }, { timestamps: true });
 
 const Post = mongoose.model('Post', postSchema);
