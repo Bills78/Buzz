@@ -55,10 +55,10 @@ module.exports.login_post = async (req, res) => {
         res.status(401).json({ message: 'Incorrect username...'});
       } else {
         res.status(401).json({ message: 'Inccorect password...' })
-      }
+      };
   } catch (err) {
     console.log(err);
-  }
+  };
 };
 
 module.exports.likedPost_get = async (req, res) => {
@@ -69,10 +69,10 @@ module.exports.likedPost_get = async (req, res) => {
       console.log(err)
     } else {
       const isLiked = result[0].liked.includes(postId);
-      res.json({ data: isLiked })
-    }
-  })
-}
+      res.json({ data: isLiked });
+    };
+  });
+};
 
 module.exports.addLiked_patch = async (req, res) => {
   postId = req.body.postId;
@@ -83,8 +83,8 @@ module.exports.addLiked_patch = async (req, res) => {
         res.json(err.message)
       }
       console.log(result)
-    })
-}
+    });
+};
 
 module.exports.removeLiked_patch = async (req, res) => {
   postId = req.body.postId;
@@ -95,5 +95,5 @@ module.exports.removeLiked_patch = async (req, res) => {
         res.json(err.message)
       }
       res.json(result)
-    })
-}
+    });
+};

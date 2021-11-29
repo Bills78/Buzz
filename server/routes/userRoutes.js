@@ -13,5 +13,4 @@ router.patch('/add-liked', auth, userController.addLiked_patch);
 
 router.patch('/remove-liked', auth, userController.removeLiked_patch);
 
-
 module.exports = router;
