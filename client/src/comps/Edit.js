@@ -3,7 +3,7 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 
 const Edit = (props) => {
-  const { submitEdit, handleChange, post } = props;
+  const { submitEdit, handleChange, post, handleDelete, id } = props;
 
   return (
     <Modal
@@ -30,6 +30,14 @@ const Edit = (props) => {
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
+          <Button
+            variant="dark"
+            onClick={() => {
+              handleDelete(id);
+            }}
+          >
+            Delete Post
+          </Button>
           <Button variant="warning" type="submit">
             Submit
           </Button>

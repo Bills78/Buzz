@@ -6,7 +6,7 @@ const TopNavbar = (props) => {
   const { username } = props;
 
   return (
-    <Navbar bg="warning">
+    <Navbar bg="warning" className="topNav">
       <Container>
         <Navbar.Brand href="/home">Buzz</Navbar.Brand>
         <Nav>

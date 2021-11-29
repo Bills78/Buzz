@@ -1,15 +1,17 @@
+import moment from "moment";
 import { Card, Container, Button } from "react-bootstrap";
 
 const Post = (props) => {
-  const { posts, username, handleDelete, setShowEdit, setPost, setId, sendLikes } = props;
+  const { posts, username, setShowEdit, setPost, setId, sendLikes } = props;
 
   const Buttons = (props) => {
     if (username === props.postUser) {
       return (
         <>
           <Button
+            className="post-btn"
             size="sm"
-            variant="warning"
+            variant="light"
             onClick={() => {
               setShowEdit(true);
               setPost(props.postBody);
@@ -17,15 +19,6 @@ const Post = (props) => {
             }}>
             Edit
           </Button>{" "}
-          <Button
-            size="sm"
-            variant="dark"
-            onClick={() => {
-              handleDelete(props.postId);
-            }}
-          >
-            Delete
-          </Button>
         </>
       );
     }
@@ -35,32 +28,38 @@ const Post = (props) => {
   return (
     <Container className="Posts" fluid>
       {posts.map((post) => {
-        const createdAt = new Date(post.updatedAt).toDateString();
+        const createdAt = moment(post.createdAt).startOf('second').fromNow();
         return (
           <div key={post._id}>
             <Card className="post">
-              <Card.Header>
-                <small className="text-muted">
-                  @{post.postedBy} | {createdAt}
-                </small>
-              </Card.Header>
               <Card.Body>
+                <Card.Text className="post-header">
+                  <small className="text-muted">@{post.postedBy}</small>{" "}
+                  <small>Likes: {post.likes}</small>{" "}
+                  <small className="text-muted">{createdAt}</small>
+                </Card.Text>
                 <Card.Text>{post.body}</Card.Text>
               </Card.Body>
-              <Card.Footer>
-              <Button
-                onClick={() => {
-                  sendLikes(post._id, post.likes)
-                }}
-                size="sm"
-                variant='warning'
-              >Likes: {post.likes}</Button>{' '}
-              <Buttons
-                postUser={post.postedBy}
-                postId={post._id}
-                postBody={post.body}
-              />
+              <Card.Footer className="bottom-post-btns text-muted">
+                  <Button
+                    onClick={() => {
+                      sendLikes(post._id, post.likes)
+                    }}
+                    size="sm"
+                    variant="light"
+                    className="post-btn"
+                  >Like</Button>
+                  <Buttons
+                    postUser={post.postedBy}
+                    postId={post._id}
+                    postBody={post.body}
+                  />
               </Card.Footer>
+              {/* <Form>
+                <Card.Footer>
+                 <input></input>
+                </Card.Footer>
+              </Form> */}
             </Card>
           </div>
         );

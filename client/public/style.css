@@ -20,9 +20,19 @@
   margin-bottom: 1em;
 }
 
+.topNav {
+  position: fixed !important;
+  width: 100% !important;
+  z-index: 100;
+}
+
 .home-page {
   display: flex;
   justify-content: center;
+}
+
+.posts-n-add {
+  margin-top: 4em !important;
 }
 
 .xtra {
@@ -40,7 +50,7 @@
 }
 
 .Posts {
-  margin: 1em;
+  margin: 1em 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -51,4 +61,19 @@
   margin: .5em 0em .5em 1em;
   width: 400px;
   cursor: pointer;
+}
+
+.post-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.bottom-post-btns {
+  display: flex;
+  justify-content: space-around;
+  align-items: baseline;
+}
+
+.post-btn {
+  width: 50%;
 }

@@ -16,6 +16,7 @@ const Posts = (props) => {
   const [modalShow, setModalShow] = useState(false);
   const [username, setUsername] = useState(null);
   const [showEdit, setShowEdit] = useState(false);
+  const [commentShow, setCommentShow] = useState(false);
   const [post, setPost] = useState({ body: "" });
   const [id, setId] = useState({ id: "" });
 
@@ -79,6 +80,8 @@ const Posts = (props) => {
       .then((res) => {
         const deletedId = res.data._id;
         setPosts(posts.filter((post) => post._id !== deletedId));
+        setId({ id : ""});
+        setShowEdit(false);
       })
       .catch((err) => console.log(err));
   }
@@ -153,7 +156,7 @@ const Posts = (props) => {
           }
         }),
       ]);
-  }
+  };
 
 
   const sendLikes = async (postId, postLikes) => {
@@ -175,7 +178,6 @@ const Posts = (props) => {
         } else if (data === false) {
           console.log('add')
           return addLike(postId, postLikes)
-          
       }
     })
   }
@@ -184,18 +186,18 @@ const Posts = (props) => {
     <div>
       {username && <TopNavbar username={username} />}
       <Container className="home-page">
-        <Row>
+        <Row className="posts-n-add">
           <Col xs={10}>
             {posts && (
               <Post
                 posts={posts}
                 username={username}
-                handleDelete={handleDelete}
-                showEdit={showEdit}
                 setShowEdit={setShowEdit}
                 setPost={setPost}
                 setId={setId}
                 sendLikes={sendLikes}
+                commentShow={commentShow}
+                setCommentShow={setCommentShow}
               />
             )}
           </Col>
@@ -225,6 +227,8 @@ const Posts = (props) => {
               onChange={handleChange}
               post={post}
               submitEdit={submitEdit}
+              handleDelete={handleDelete}
+              id={id}
             />
           </Col>
         </Row>
