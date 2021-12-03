@@ -8,18 +8,25 @@ import { useEffect, useState } from "react";
 import Post from "../comps/Post";
 import Popup from "../comps/Modal";
 import Edit from "../comps/Edit";
+import Comments from '../comps/Comments'
 
 const Posts = (props) => {
   axios.defaults.baseURL = "http://localhost:8080";
   const token = localStorage.getItem("user");
   const [posts, setPosts] = useState(null);
+  const [comments, setComments] = useState(null);
   const [modalShow, setModalShow] = useState(false);
-  const [username, setUsername] = useState(null);
   const [showEdit, setShowEdit] = useState(false);
   const [commentShow, setCommentShow] = useState(false);
-  const [post, setPost] = useState({ body: "" });
-  const [id, setId] = useState({ id: "" });
-
+  const [username, setUsername] = useState(null);
+  const [comment, setComment] = useState("");
+  const [post, setPost] = useState({
+    body: "",
+    id: "",
+    author: "",
+    creation: "",
+  })
+  
   const { BEAPI } = props;
 
   useEffect(() => {
@@ -35,7 +42,7 @@ const Posts = (props) => {
       })
       .catch((err) => console.log(err.message));
     // eslint-disable-next-line
-  }, [modalShow, id]);
+  }, [modalShow, post]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -46,7 +53,7 @@ const Posts = (props) => {
   };
 
   const handleSubmit = async () => {
-    const newPost = post;
+    const newPost = post.body;
     await axios
       .post(
         "/create-post",
@@ -59,7 +66,7 @@ const Posts = (props) => {
           },
         }
       )
-      .then((res) => {
+      .then(() => {
         setModalShow(false);
         setPost({
           body: "",
@@ -80,7 +87,9 @@ const Posts = (props) => {
       .then((res) => {
         const deletedId = res.data._id;
         setPosts(posts.filter((post) => post._id !== deletedId));
-        setId({ id : ""});
+        setPost({
+          id: "",
+        });
         setShowEdit(false);
       })
       .catch((err) => console.log(err));
@@ -89,10 +98,10 @@ const Posts = (props) => {
   const submitEdit = async () => {
     await axios
       .patch(
-        `/edit-post/:${id}`, { body: post.body },
+        `/edit-post/:${post.id}`, { body: post.body },
         {
           params: {
-            post_id: id,
+            post_id: post.id,
           },
           headers: {
             "x-access-token": `${token}`,
@@ -102,8 +111,6 @@ const Posts = (props) => {
       .then(() => {
         setPost({
           body: "",
-        });
-        setId({
           id: "",
         });
       });
@@ -122,7 +129,9 @@ const Posts = (props) => {
           },
         })
         .then(() => {
-          setId({ id: "" })
+          setPost({
+            id: "",
+          });
         }),
       axios.patch('add-liked', { postId },
         {
@@ -134,7 +143,9 @@ const Posts = (props) => {
   };
 
   const removeLike = async (postId, postLikes) => {
-    setId({ id: "" })
+    setPost({
+      id: "",
+    });
     const newLikes = postLikes - 1;
     await axios.all([
       axios.patch('/add-like', { likes: newLikes }, 
@@ -147,7 +158,9 @@ const Posts = (props) => {
           },
         })
         .then(() => {
-          setId({ id: "" })
+          setPost({
+            id: "",
+          });
         }),
       axios.patch('remove-liked', { postId },
         {
@@ -158,9 +171,10 @@ const Posts = (props) => {
       ]);
   };
 
-
   const sendLikes = async (postId, postLikes) => {
-    setId({ id: 1 })
+    setPost({
+      id: 1,
+    });
     await axios
       .get(`/check-likes/:${postId}`, {
         params: {
@@ -173,14 +187,71 @@ const Posts = (props) => {
       .then(res => {
         const data = res.data.data;
         if (data === true) {
-          console.log('remove')
           return removeLike(postId, postLikes)
         } else if (data === false) {
-          console.log('add')
           return addLike(postId, postLikes)
-      }
+      };
+    });
+  };
+
+  const commentFunc = async (postId, postComments, postBody, postedBy, createdAt) => {
+    setComments(postComments);
+    setCommentShow(true);
+    setPost({
+      body: postBody,
+      id: postId,
+      author: postedBy,
+      creation: createdAt,
     })
-  }
+
+    await axios
+      .get(`/all-comments/:${post.id}`, {
+        params: {
+          post_id: post.id,
+        },
+        headers: {
+          "x-access-token": `${token}`,
+        },
+      })
+      .then(res => {
+        console.log(res)
+      })
+  };
+  
+  const handleCommentChange = (e) => {
+    const { value } = e.target;
+    setComment(`${value}`);
+  };
+
+  const submitComment = async (e) => {
+    e.preventDefault();
+    console.log(comment)
+    await axios
+      .post(
+        "/create-comment",
+        {
+          mainPost: post.id,
+          body: comment,
+        },
+        {
+          headers: {
+            "x-access-token": `${token}`,
+          },
+        }
+      )
+      .then((res) => {
+        setComment("");
+        setComments("");
+        setPost({
+          body: "",
+          id: "",
+          author: "",
+          creation: "",
+        });
+        setCommentShow(false);
+        console.log(res);
+      })
+  };
 
   return (
     <div>
@@ -194,10 +265,8 @@ const Posts = (props) => {
                 username={username}
                 setShowEdit={setShowEdit}
                 setPost={setPost}
-                setId={setId}
                 sendLikes={sendLikes}
-                commentShow={commentShow}
-                setCommentShow={setCommentShow}
+                commentFunc={commentFunc}
               />
             )}
           </Col>
@@ -218,17 +287,28 @@ const Posts = (props) => {
               onHide={() => setModalShow(false)}
               onChange={handleChange}
               onSubmit={handleSubmit}
-              post={post}
+              post={post.body}
             />
 
             <Edit
               show={showEdit}
               onHide={() => setShowEdit(false)}
               onChange={handleChange}
-              post={post}
+              post={post.body}
               submitEdit={submitEdit}
               handleDelete={handleDelete}
-              id={id}
+              id={post.id}
+            />
+
+            <Comments 
+              show={commentShow}
+              onHide={() => setCommentShow(false)}
+              comments={comments}
+              body={post.body}
+              author={post.author}
+              creation={post.creation}
+              onSubmit={submitComment}
+              onChange={handleCommentChange}
             />
           </Col>
         </Row>

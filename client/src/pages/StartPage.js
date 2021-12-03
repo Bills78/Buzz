@@ -54,7 +54,7 @@ const Start = () => {
         navigate("/home");
       })
       .catch((err) => {
-        console.log(err.response.data.message);
+        console.log(err.response);
       });
   };
 

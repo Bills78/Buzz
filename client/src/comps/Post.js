@@ -2,7 +2,7 @@ import moment from "moment";
 import { Card, Container, Button } from "react-bootstrap";
 
 const Post = (props) => {
-  const { posts, username, setShowEdit, setPost, setId, sendLikes } = props;
+  const { posts, username, setShowEdit, setPost, sendLikes, commentFunc } = props;
 
   const Buttons = (props) => {
     if (username === props.postUser) {
@@ -11,11 +11,13 @@ const Post = (props) => {
           <Button
             className="post-btn"
             size="sm"
-            variant="light"
+            variant="warning"
             onClick={() => {
               setShowEdit(true);
-              setPost(props.postBody);
-              setId(props.postId);
+              setPost({
+                body: props.postBody,
+                id: props.postId,
+              });
             }}>
             Edit
           </Button>{" "}
@@ -46,20 +48,22 @@ const Post = (props) => {
                       sendLikes(post._id, post.likes)
                     }}
                     size="sm"
-                    variant="light"
+                    variant="warning"
                     className="post-btn"
                   >Like</Button>
+                  <Button                    
+                    onClick={() => {
+                      commentFunc(post._id, post.comments, post.body, post.postedBy, createdAt);
+                    }}
+                    size="sm"
+                    variant="warning"
+                    className="post-btn">Comments</Button>
                   <Buttons
                     postUser={post.postedBy}
                     postId={post._id}
                     postBody={post.body}
                   />
               </Card.Footer>
-              {/* <Form>
-                <Card.Footer>
-                 <input></input>
-                </Card.Footer>
-              </Form> */}
             </Card>
           </div>
         );

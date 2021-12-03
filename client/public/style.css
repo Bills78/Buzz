@@ -77,3 +77,37 @@
 .post-btn {
   width: 50%;
 }
+
+.comment-modal-body {
+  width: 498px;
+  display: flex;
+  flex-direction: column;
+  align-self: center;
+}
+
+.comment-modal-head {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1em;
+}
+
+.all-comments {
+  flex-direction: column;
+}
+
+.comment {
+  width: 420px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.post-comment-btn {
+  width: 29%;
+  align-self: flex-end;
+}
