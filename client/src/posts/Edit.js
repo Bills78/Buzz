@@ -3,7 +3,7 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 
 const Edit = (props) => {
-  const { submitEdit, handleChange, post, handleDelete, id } = props;
+  const { onSubmit, handleChange, post, onClick, id } = props;
 
   return (
     <Modal
@@ -12,7 +12,7 @@ const Edit = (props) => {
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >
-      <Form onSubmit={submitEdit}>
+      <Form onSubmit={onSubmit}>
         <Modal.Header closeButton>
           <Modal.Title id="contained-modal-title-vcenter">Edit</Modal.Title>
         </Modal.Header>
@@ -33,7 +33,7 @@ const Edit = (props) => {
           <Button
             variant="dark"
             onClick={() => {
-              handleDelete(id);
+              onClick(id);
             }}
           >
             Delete Post

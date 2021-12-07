@@ -5,13 +5,17 @@ import Card from "react-bootstrap/Card";
 import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ErrAlert from "../auth/ErrAlert";
+import UserErrAlert from "../auth/UserErrAlert";
 
 axios.defaults.baseURL = "http://localhost:8080";
 
 const Start = () => {
   let navigate = useNavigate();
 
-  const [modalShow, setModalShow] = useState(false);
+  const [errMsg, setErrMsg] = useState(null);
+  const [showErr, setShowErr] = useState(false);
+  const [showUserErr, setShowUserErr] = useState(false);
   const [newUser, setNewUser] = useState({
     username: "",
     email: "",
@@ -42,7 +46,11 @@ const Start = () => {
         localStorage.setItem("user", res.data.token);
         navigate("/home");
       })
-      .catch((err) => console.log(err.response.data.message));
+      .catch(err => {
+        setErrMsg(err.response.data.message);
+        setShowUserErr(true);
+        setShowErr(false);
+      });
   };
 
   const onLoginSubmit = async (e) => {
@@ -53,8 +61,10 @@ const Start = () => {
         localStorage.setItem("user", res.data.token);
         navigate("/home");
       })
-      .catch((err) => {
-        console.log(err.response);
+      .catch(err => {
+        setErrMsg(err.response.data.message);
+        setShowErr(true);
+        setShowUserErr(false);
       });
   };
 
@@ -63,18 +73,28 @@ const Start = () => {
       <Card bg="warning" className="login-interface">
         <Card.Header>Welcome to Buzz</Card.Header>
         <Card.Body>
+          <UserErrAlert 
+            errMsg={errMsg}
+            showUserErr={showUserErr}
+          />
           <Container>
             <NewUser
               handleNewChange={handleNewChange}
               onNewSubmit={onNewSubmit}
             />
           </Container>
-          <div>
-            <p>or</p>
+          <div className="or-lines">
+            <div className="or-line"></div>
+            <div className="the-or">
+              <p>or</p>
+            </div>
+            <div className="or-line"></div>
           </div>
+          <ErrAlert 
+            errMsg={errMsg}
+            showErr={showErr}
+          />
           <Login
-            show={modalShow}
-            onHide={() => setModalShow(false)}
             handleLoginChange={handleLoginChange}
             onLoginSubmit={onLoginSubmit}
           />

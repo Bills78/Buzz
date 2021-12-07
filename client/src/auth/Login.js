@@ -20,7 +20,7 @@ function Login(props) {
             onChange={handleLoginChange}
           />
         </InputGroup>
-        <Form.Group className="accout-input" controlId="login-Pass">
+        <Form.Group className="accout-input" controlId="login-pass">
           <Form.Control
             required
             type="password"

@@ -6,7 +6,8 @@ const port = process.env.API_PORT || 5000;
 const DB = process.env.MONGO_URI;
 const user = require('./routes/userRoutes');
 const post = require('./routes/postsRoutes');
-const morgan = require('morgan')
+const comment = require('./routes/commentRoutes');
+const morgan = require('morgan');
 const app = express();
 
 app.use(morgan('dev'))
@@ -14,7 +15,8 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(user);
-app.use(post)
+app.use(post);
+app.use(comment);
 
 app.listen(port, () => {
   mongoose.connect(DB, { 

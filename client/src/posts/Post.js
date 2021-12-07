@@ -2,7 +2,7 @@ import moment from "moment";
 import { Card, Container, Button } from "react-bootstrap";
 
 const Post = (props) => {
-  const { posts, username, setShowEdit, setPost, sendLikes, commentFunc } = props;
+  const { posts, username, setShowEdit, setPost, commentFunc, sendLikes } = props;
 
   const Buttons = (props) => {
     if (username === props.postUser) {
@@ -45,7 +45,7 @@ const Post = (props) => {
               <Card.Footer className="bottom-post-btns text-muted">
                   <Button
                     onClick={() => {
-                      sendLikes(post._id, post.likes)
+                      sendLikes(undefined, 'post-likes', post._id, post.likes)
                     }}
                     size="sm"
                     variant="warning"
@@ -53,7 +53,7 @@ const Post = (props) => {
                   >Like</Button>
                   <Button                    
                     onClick={() => {
-                      commentFunc(post._id, post.comments, post.body, post.postedBy, createdAt);
+                      commentFunc(post._id, post.body, post.postedBy, createdAt);
                     }}
                     size="sm"
                     variant="warning"

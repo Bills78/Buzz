@@ -1,68 +1,36 @@
-const Post = require('../models/posts');
-const User = require('../models/user')
+const Comment = require('../models/comment');
+const User = require('../models/user');
 
-module.exports.newPostPost = async (req, res) => {
-  const { body } = req.body;
+module.exports.allCommentsGet = async (req, res) => {
+  const postId = req.query.post_id;
+  const comments = await Comment.find({ mainPost: postId }).sort({createdAt: -1});
+  res.json(comments);
+}
+
+module.exports.newCommentPost = (req, res) => {
+  const { mainPost, body } = req.body;
   const username = req.user.username;
+
+  console.log(mainPost)
+  console.log(body)
+  console.log(username)
   
-  const post = new Post({
+  const comment = new Comment({
+    mainPost,
     body,
     postedBy: username,
     likes: 0,
   });
 
-  post.save()
+  comment.save()
+  .then(res.json({ message: "comment saved"}))
   .catch(err => console.log(err));
-  
-  const posts = await Post.find({}).sort({createdAt: -1});
-  res.json(posts);
-};
-
-module.exports.allPostsGet = async (req, res) => {
-  const username = req.user.username
-  const posts = await Post.find({}).sort({createdAt: -1});
-  res.json({
-    posts,
-    username
-  });
-};
-
-module.exports.profilePostsGet = async (req, res) => {
-  const username = req.user.username;
-  const posts = await Post.find({postedBy: username}).sort({createdAt: -1});
-  res.json({ 
-    posts,
-    username
-  });
-};
-
-module.exports.deletePostDelete = (req, res) => {
-  const postId = req.query.post_id;
-  Post.findByIdAndDelete({ _id: postId }, (err, deleted) => {
-    if (err) {
-      console.log(err)
-    }
-    res.json(deleted);
-  });
-};
-
-module.exports.editPostPatch = async (req, res) => {
-  const postId = req.query.post_id;
-  const body = req.body.body;
-  Post.findByIdAndUpdate(postId, {
-    body: `${body}`,
-  }, (err, res) => {
-    if (err) {
-      console.log(err)
-    }
-    console.log(res)
-  });
 };
 
 module.exports.addLikePatch = async (req, res) => {
   const postId = req.query.post_id;
   const likes = req.body.likes;
-  Post.findByIdAndUpdate(postId, {
+  Comment.findByIdAndUpdate(postId, {
     likes: `${likes}`,
   }, (err, result) => {
     if (err) {
@@ -71,7 +39,6 @@ module.exports.addLikePatch = async (req, res) => {
     res.json(result.likes)
   });
 };
-
 
 module.exports.likedPostGet = async (req, res) => {
   const postId = req.query.post_id;

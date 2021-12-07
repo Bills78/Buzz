@@ -1,13 +1,10 @@
 import { Card, Modal, Button, Form } from "react-bootstrap";
-import uniqid from "uniqid";
+import moment from "moment";
 
 const Comments = (props) => {
 
-  const { comments, body, author, creation, onSubmit, handleChange } = props;
+  const { comments, post, handleChange, onSubmit } = props;
 
-  const commentAuthor = 'bill';
-  const commentCreation = '1 day ago';
-  
   return (
     <Modal
       {...props}
@@ -18,14 +15,14 @@ const Comments = (props) => {
     <Form>
       <Modal.Body className="comment-modal-body">
           <div className="text-muted comment-modal-head">
-            <div>@{author}</div>
-            <div>{creation}</div>
+            <div>@{post.author}</div>
+            <div>{post.creation}</div>
           </div>        
-          {body}
+          {post.body}
         </Modal.Body>
         <Modal.Footer className="all-comments">
             <div className="comment">
-              <textarea
+              <input
                 placeholder="write a new comment"
                 onChange={handleChange}
                 name="body"
@@ -40,13 +37,28 @@ const Comments = (props) => {
               </Button>
             </div>
           {comments && comments.map(comment => {
+            const createdAt = moment(comment.createdAt).startOf('second').fromNow();
             return (
-              <Card className="comment" key={uniqid()}>
+              <Card className="comment" key={comment._id}>
                 <div className="comment-header">
-                  <div>@{commentAuthor}</div>
-                  <div>{commentCreation}</div>
+                  <div>@{comment.postedBy}</div>
+                  <div>Likes: {comment.likes}</div>
+                  <div>{createdAt}</div>
                 </div>
-                {comment}
+                <div className="comment-body">
+                  {comment.body}
+                </div>
+                <Button
+                  onClick={(e) => {
+                    e.data = {
+                      whereTo: 'comment-likes',
+                      commentId: comment._id,
+                      commentLikes: comment.likes,
+                    };
+                  }}
+                  size="sm"
+                  variant="warning"
+                >Like</Button>
               </Card>
             )
           })}

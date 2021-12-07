@@ -1,14 +1,14 @@
-import TopNavbar from "../comps/Navbar";
+import TopNavbar from "../posts/Navbar";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import Post from "../comps/Post";
-import Popup from "../comps/Modal";
-import Edit from "../comps/Edit";
-import Comments from '../comps/Comments'
+import Post from "../posts/Post";
+import Popup from "../posts/Modal";
+import Edit from "../posts/Edit";
+import Comments from '../posts/Comments'
 
 const Posts = (props) => {
   axios.defaults.baseURL = "http://localhost:8080";
@@ -19,14 +19,17 @@ const Posts = (props) => {
   const [showEdit, setShowEdit] = useState(false);
   const [commentShow, setCommentShow] = useState(false);
   const [username, setUsername] = useState(null);
-  const [comment, setComment] = useState("");
+  const [comment, setComment] = useState({
+    body: "",
+    likes: "",
+  });
   const [post, setPost] = useState({
     body: "",
     id: "",
     author: "",
     creation: "",
   })
-  
+
   const { BEAPI } = props;
 
   useEffect(() => {
@@ -116,10 +119,10 @@ const Posts = (props) => {
       });
   };
 
-  const addLike = async (postId, postLikes) => {
+  const addLike = async (whereTo, postId, postLikes) => {
     const newLikes = postLikes + 1;
     await axios.all([
-      axios.patch('/add-like', { likes: newLikes }, 
+      axios.patch(`/${whereTo}/add-like`, { likes: newLikes }, 
         {
           params: {
             post_id: postId,
@@ -133,7 +136,7 @@ const Posts = (props) => {
             id: "",
           });
         }),
-      axios.patch('add-liked', { postId },
+      axios.patch(`/${whereTo}/add-liked`, { postId },
         {
           headers: {
             "x-access-token": `${token}`
@@ -142,13 +145,13 @@ const Posts = (props) => {
       ]);
   };
 
-  const removeLike = async (postId, postLikes) => {
+  const removeLike = async (whereTo, postId, postLikes) => {
     setPost({
       id: "",
     });
     const newLikes = postLikes - 1;
     await axios.all([
-      axios.patch('/add-like', { likes: newLikes }, 
+      axios.patch(`${whereTo}/add-like`, { likes: newLikes }, 
         {
           params: {
             post_id: postId,
@@ -162,7 +165,7 @@ const Posts = (props) => {
             id: "",
           });
         }),
-      axios.patch('remove-liked', { postId },
+      axios.patch(`${whereTo}/remove-liked`, { postId },
         {
           headers: {
             "x-access-token": `${token}`
@@ -171,31 +174,30 @@ const Posts = (props) => {
       ]);
   };
 
-  const sendLikes = async (postId, postLikes) => {
+  const sendLikes = async (e, whereTo, postId, postLikes) => {
     setPost({
       id: 1,
     });
     await axios
-      .get(`/check-likes/:${postId}`, {
-        params: {
-          post_id: postId,
-        },
-        headers: {
-          "x-access-token": `${token}`,
-        },
-      })
-      .then(res => {
-        const data = res.data.data;
-        if (data === true) {
-          return removeLike(postId, postLikes)
-        } else if (data === false) {
-          return addLike(postId, postLikes)
-      };
-    });
+    .get(`/check-likes/${whereTo}/:${postId}`, {
+      params: {
+        post_id: postId,
+      },
+      headers: {
+        "x-access-token": `${token}`,
+      },
+    })
+    .then(res => {
+      const data = res.data.data;
+      if (data === true) {
+        return removeLike(whereTo, postId, postLikes)
+      } else if (data === false) {
+        return addLike(whereTo, postId, postLikes)
+    };
+  });
   };
 
-  const commentFunc = async (postId, postComments, postBody, postedBy, createdAt) => {
-    setComments(postComments);
+  const commentFunc = async (postId, postBody, postedBy, createdAt) => {
     setCommentShow(true);
     setPost({
       body: postBody,
@@ -205,33 +207,33 @@ const Posts = (props) => {
     })
 
     await axios
-      .get(`/all-comments/:${post.id}`, {
+      .get(`/all-comments/:${postId}`, {
         params: {
-          post_id: post.id,
+          post_id: postId,
         },
         headers: {
           "x-access-token": `${token}`,
         },
       })
       .then(res => {
-        console.log(res)
+        setComments(res.data)
       })
   };
   
   const handleCommentChange = (e) => {
     const { value } = e.target;
-    setComment(`${value}`);
+    setComment({
+      body: `${value}`,
+    });
   };
 
-  const submitComment = async (e) => {
-    e.preventDefault();
-    console.log(comment)
+  const submitComment = async () => {
     await axios
       .post(
         "/create-comment",
         {
           mainPost: post.id,
-          body: comment,
+          body: comment.body,
         },
         {
           headers: {
@@ -249,7 +251,6 @@ const Posts = (props) => {
           creation: "",
         });
         setCommentShow(false);
-        console.log(res);
       })
   };
 
@@ -295,8 +296,8 @@ const Posts = (props) => {
               onHide={() => setShowEdit(false)}
               onChange={handleChange}
               post={post.body}
-              submitEdit={submitEdit}
-              handleDelete={handleDelete}
+              onSubmit={submitEdit}
+              onClick={handleDelete}
               id={post.id}
             />
 
@@ -304,11 +305,10 @@ const Posts = (props) => {
               show={commentShow}
               onHide={() => setCommentShow(false)}
               comments={comments}
-              body={post.body}
-              author={post.author}
-              creation={post.creation}
+              post={post}
               onSubmit={submitComment}
               onChange={handleCommentChange}
+              onClick={sendLikes}
             />
           </Col>
         </Row>
