@@ -1,15 +1,13 @@
-import { Alert } from "react-bootstrap"
+import { Alert } from 'react-bootstrap';
 
+const ErrAlert = props => {
+	const { showErr, errMsg } = props;
 
-const ErrAlert = (props) => {
-
-  const { showErr, errMsg } = props;
-
-  return (
-    <Alert show={showErr} variant="danger">
-      {errMsg}
-    </Alert>
-  )
-}
+	return (
+		<Alert show={showErr} variant='danger'>
+			{errMsg}
+		</Alert>
+	);
+};
 
 export default ErrAlert;

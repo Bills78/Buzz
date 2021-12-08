@@ -1,0 +1,9 @@
+{
+  "prettier.configPath": ".prettierrc",
+  "prettier.arrowParens": "avoid",
+  "prettier.useTabs": true,
+  "prettier.singleQuote": true,
+  "prettier.requireConfig": true,
+  "prettier.jsxSingleQuote": true,
+  "prettier.jsxBracketSameLine": true
+}
