@@ -13,20 +13,12 @@ router.delete('/delete-post/:postId', auth, postsController.deletePostDelete);
 
 router.patch('/edit-post/:postId', auth, postsController.editPostPatch);
 
-router.get(
-	'/check-likes/post-likes/:postId',
-	auth,
-	postsController.likedPostGet
-);
+router.get('/check-likes/:postId', auth, postsController.likedPostGet);
 
-router.patch('/post-likes/add-liked', auth, postsController.addLikedPatch);
+router.patch('/add-liked', auth, postsController.addLikedPatch);
 
-router.patch('/post-likes/add-like', auth, postsController.addLikePatch);
+router.patch('/add-like', auth, postsController.addLikePatch);
 
-router.patch(
-	'/post-likes/remove-liked',
-	auth,
-	postsController.removeLikedPatch
-);
+router.patch('/remove-liked', auth, postsController.removeLikedPatch);
 
 module.exports = router;

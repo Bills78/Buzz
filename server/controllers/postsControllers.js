@@ -100,9 +100,9 @@ module.exports.addLikedPatch = async (req, res) => {
 		{ $addToSet: { liked: [`${postId}`] } },
 		(err, result) => {
 			if (err) {
-				res.json(err.message);
+				res.status(501).json(err.message);
 			}
-			console.log(result);
+			res.status(201).json(result);
 		}
 	);
 };
@@ -115,9 +115,9 @@ module.exports.removeLikedPatch = async (req, res) => {
 		{ $pullAll: { liked: [`${postId}`] } },
 		(err, result) => {
 			if (err) {
-				res.json(err.message);
+				res.status(501).json(err.message);
 			}
-			res.json(result);
+			res.status(201).json(result);
 		}
 	);
 };

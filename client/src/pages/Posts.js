@@ -12,6 +12,7 @@ import Edit from '../posts/Edit';
 const Posts = props => {
 	axios.defaults.baseURL = 'http://localhost:8080';
 	const token = localStorage.getItem('user');
+	const [liked, setLiked] = useState(null);
 	const [posts, setPosts] = useState(null);
 	const [comments, setComments] = useState(null);
 	const [modalShow, setModalShow] = useState(false);
@@ -45,7 +46,10 @@ const Posts = props => {
 					'x-access-token': `${token}`,
 				},
 			})
-			.then(res => setComments(res.data))
+			.then(res => {
+				setComments(res.data.comments);
+				setLiked(res.data.liked);
+			})
 			.catch(err => console.log(err.message));
 		// eslint-disable-next-line
 	}, [modalShow, post]);
@@ -56,7 +60,6 @@ const Posts = props => {
 			...prevState,
 			[name]: value,
 		}));
-		console.log(post.body);
 	};
 
 	const handleSubmit = async () => {
@@ -123,12 +126,12 @@ const Posts = props => {
 			});
 	};
 
-	const addLike = async (whereTo, postId, postLikes) => {
+	const addLike = async (postId, postLikes) => {
 		const newLikes = postLikes + 1;
 		await axios.all([
 			axios
 				.patch(
-					`/${whereTo}/add-like`,
+					`/add-like`,
 					{ likes: newLikes },
 					{
 						params: {
@@ -145,7 +148,7 @@ const Posts = props => {
 					});
 				}),
 			axios.patch(
-				`/${whereTo}/add-liked`,
+				`/add-liked`,
 				{ postId },
 				{
 					headers: {
@@ -156,7 +159,7 @@ const Posts = props => {
 		]);
 	};
 
-	const removeLike = async (whereTo, postId, postLikes) => {
+	const removeLike = async (postId, postLikes) => {
 		setPost({
 			id: '',
 		});
@@ -164,7 +167,7 @@ const Posts = props => {
 		await axios.all([
 			axios
 				.patch(
-					`${whereTo}/add-like`,
+					`/add-like`,
 					{ likes: newLikes },
 					{
 						params: {
@@ -181,7 +184,7 @@ const Posts = props => {
 					});
 				}),
 			axios.patch(
-				`${whereTo}/remove-liked`,
+				`/remove-liked`,
 				{ postId },
 				{
 					headers: {
@@ -192,12 +195,12 @@ const Posts = props => {
 		]);
 	};
 
-	const sendLikes = async (e, whereTo, postId, postLikes) => {
+	const sendLikes = async (postId, postLikes) => {
 		setPost({
 			id: 1,
 		});
 		await axios
-			.get(`/check-likes/${whereTo}/:${postId}`, {
+			.get(`/check-likes/:${postId}`, {
 				params: {
 					post_id: postId,
 				},
@@ -208,45 +211,12 @@ const Posts = props => {
 			.then(res => {
 				const data = res.data.data;
 				if (data === true) {
-					return removeLike(whereTo, postId, postLikes);
+					return removeLike(postId, postLikes);
 				} else if (data === false) {
-					return addLike(whereTo, postId, postLikes);
+					return addLike(postId, postLikes);
 				}
 			});
 	};
-
-	// const handleCommentChange = (e) => {
-	//   const { value } = e.target;
-	//   setComment({
-	//     body: `${value}`,
-	//   });
-	// };
-	//
-	// const submitComment = async () => {
-	//   await axios
-	//     .post(
-	//       "/create-comment",
-	//       {
-	//         mainPost: post.id,
-	//         body: comment.body,
-	//       },
-	//       {
-	//         headers: {
-	//           "x-access-token": `${token}`,
-	//         },
-	//       }
-	//     )
-	//     .then((res) => {
-	//       setComment("");
-	//       setComments("");
-	//       setPost({
-	//         body: "",
-	//         id: "",
-	//         author: "",
-	//         creation: "",
-	//       });
-	//     })
-	// };
 
 	return (
 		<div>
@@ -254,7 +224,7 @@ const Posts = props => {
 			<Container className='home-page'>
 				<Row className='posts-n-add'>
 					<Col xs={10}>
-						{posts && comments && (
+						{posts && comments && liked && (
 							<Post
 								posts={posts}
 								username={username}
@@ -262,7 +232,8 @@ const Posts = props => {
 								setPost={setPost}
 								sendLikes={sendLikes}
 								comments={comments}
-								// commentFunc={commentFunc}
+								token={token}
+								liked={liked}
 							/>
 						)}
 					</Col>
@@ -276,7 +247,6 @@ const Posts = props => {
 							}}>
 							+
 						</Button>
-
 						<Popup
 							show={modalShow}
 							onHide={() => setModalShow(false)}
@@ -284,7 +254,6 @@ const Posts = props => {
 							onSubmit={handleSubmit}
 							post={post.body}
 						/>
-
 						<Edit
 							show={showEdit}
 							onHide={() => setShowEdit(false)}
@@ -294,16 +263,6 @@ const Posts = props => {
 							onClick={handleDelete}
 							id={post.id}
 						/>
-
-						{/* <Comments 
-              show={commentShow}
-              onHide={() => setCommentShow(false)}
-              comments={comments}
-              post={post}
-              onSubmit={submitComment}
-              onChange={handleCommentChange}
-              onClick={sendLikes}
-            /> */}
 					</Col>
 				</Row>
 			</Container>
